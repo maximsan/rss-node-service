@@ -1,11 +1,18 @@
 const tasksRepo = require('./task.memory.repository');
+const { NotFoundError } = require('../../common/customErrors');
 
 const getAll = async boardId => {
   return await tasksRepo.getAll(boardId);
 };
 
 const get = async (id, boardId) => {
-  return await tasksRepo.get(id, boardId);
+  const task = await tasksRepo.get(id, boardId);
+
+  if (!task) {
+    throw new NotFoundError(`The task with id${id} was not found`);
+  }
+
+  return task;
 };
 
 const create = async task => {
