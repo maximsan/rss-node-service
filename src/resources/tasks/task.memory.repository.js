@@ -10,7 +10,7 @@ const getAll = async boardId => {
 const get = async (id, boardId) => {
   const tasks = await getAll(boardId);
 
-  if (!tasks) {
+  if (!tasks.length) {
     throw new NotFoundError(
       `Tasks for board with id: ${boardId} was not found`
     );

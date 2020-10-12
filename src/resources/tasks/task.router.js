@@ -11,9 +11,13 @@ router.route('/').get(async (req, res) => {
 
 router.route('/:id').get(async (req, res) => {
   const { boardId, id } = req.params;
-  const task = await tasksService.get(id, boardId);
 
-  res.send(task);
+  try {
+    const task = await tasksService.get(id, boardId);
+    res.send(task);
+  } catch {
+    res.status(404).send('Not found');
+  }
 });
 
 router.route('/').post(async (req, res) => {
@@ -37,10 +41,9 @@ router.route('/:id').delete(async (req, res) => {
 
   try {
     await tasksService.remove(id, boardId);
-
     res.status(200).send();
-  } catch (error) {
-    res.status(404).send();
+  } catch {
+    res.status(404).send('Not found');
   }
 });
 

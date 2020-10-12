@@ -7,7 +7,13 @@ const getAll = async () => {
 };
 
 const get = async id => {
-  return await memoryDB.get(memoryDB.entities.BOARDS, id);
+  const board = await memoryDB.get(memoryDB.entities.BOARDS, id);
+
+  if (!board) {
+    throw new NotFoundError(`The board with id ${id} was not found`);
+  }
+
+  return board;
 };
 
 const create = async board => {

@@ -65,9 +65,8 @@ const update = async (entity, entityId, newEntityData) => {
 };
 
 const remove = async (entity, entityId) => {
-  const entityToRemove = memoryDB[entity].filter(({ id }) => id === entityId);
-  const index = memoryDB[entity].indexOf(entityToRemove);
-  memoryDB[entity][index] = null;
+  const indexToRemove = memoryDB[entity].findIndex(({ id }) => id === entityId);
+  memoryDB[entity].splice(indexToRemove, 1);
 };
 
 module.exports = {

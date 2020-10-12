@@ -33,12 +33,16 @@ const remove = async id => {
   const userTasks = (await memoryDB.getAll(memoryDB.entities.TASKS)).filter(
     ({ userId }) => id === userId
   );
-  for (const task of userTasks) {
-    await memoryDB.update(memoryDB.entities.TASKS, task.id, {
-      ...task,
-      userId: null
-    });
-  }
+
+  await Promise.all(
+    userTasks.map(task => {
+      return memoryDB.update(memoryDB.entities.TASKS, task.id, {
+        ...task,
+        userId: null
+      });
+    })
+  );
+
   await memoryDB.remove(memoryDB.entities.USERS, id);
 };
 
