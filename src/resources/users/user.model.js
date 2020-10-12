@@ -19,4 +19,16 @@ class User {
   }
 }
 
-module.exports = User;
+const createNewUser = () => {
+  return new User();
+};
+
+const mapUser = ({ name, login, password }) => {
+  return new User({ name, login, password });
+};
+
+module.exports = {
+  User,
+  createNewUser,
+  mapUser
+};
