@@ -1,49 +1,55 @@
-const memoryDB = require('../../common/memoryDB');
+const { entities } = require('../../common/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
-const getAll = async () => {
-  return await memoryDB.getAll(memoryDB.entities.USERS);
-};
-
-const get = async id => {
-  const user = await memoryDB.get(memoryDB.entities.USERS, id);
-
-  if (!user) {
-    throw new NotFoundError(`User with id: ${id} was not found`);
+class UserRepository {
+  constructor(userModel) {
+    this.model = userModel;
   }
 
-  return user;
-};
-
-const create = async user => {
-  return await memoryDB.create(memoryDB.entities.USERS, user);
-};
-
-const update = async (id, user) => {
-  const newUser = await memoryDB.update(memoryDB.entities.USERS, id, user);
-
-  if (!newUser) {
-    throw new NotFoundError(`User with id: ${id} was not found`);
+  async getAll() {
+    return this.model.getAll(entities.USERS);
   }
 
-  return newUser;
-};
+  async get(id) {
+    const user = await this.model.get(entities.USERS, id);
 
-const remove = async id => {
-  const userTasks = (await memoryDB.getAll(memoryDB.entities.TASKS)).filter(
-    ({ userId }) => id === userId
-  );
+    if (!user) {
+      throw new NotFoundError(`User with id: ${id} was not found`);
+    }
 
-  await Promise.all(
-    userTasks.map(task => {
-      return memoryDB.update(memoryDB.entities.TASKS, task.id, {
-        ...task,
-        userId: null
-      });
-    })
-  );
+    return user;
+  }
 
-  await memoryDB.remove(memoryDB.entities.USERS, id);
-};
+  async create(user) {
+    return this.model.create(entities.USERS, user);
+  }
 
-module.exports = { getAll, get, create, update, remove };
+  async update(id, user) {
+    const newUser = await this.model.update(entities.USERS, id, user);
+
+    if (!newUser) {
+      throw new NotFoundError(`User with id: ${id} was not found`);
+    }
+
+    return newUser;
+  }
+
+  async remove(id) {
+    const userTasks = (await this.model.getAll(entities.TASKS)).filter(
+      ({ userId }) => id === userId
+    );
+
+    await Promise.all(
+      userTasks.map(task => {
+        return this.model.update(entities.TASKS, task.id, {
+          ...task,
+          userId: null
+        });
+      })
+    );
+
+    await this.model.remove(entities.USERS, id);
+  }
+}
+
+module.exports = UserRepository;

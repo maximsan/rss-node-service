@@ -1,10 +1,14 @@
 const router = require('express').Router();
 const { User } = require('./user.model');
-const usersService = require('./user.service');
+const UserService = require('./user.service');
 const { mapUser } = require('./user.model');
+const memoryDB = require('../../common/memoryDB');
+const UserRepository = require('./user.memory.repository');
+const UserRepo = new UserRepository(memoryDB);
+const UserServ = new UserService(UserRepo);
 
 router.route('/').get(async (req, res) => {
-  const users = await usersService.getAll();
+  const users = await UserServ.getAll();
 
   // map user fields to exclude secret fields like "password"
   res.send(users.map(User.toResponse));
@@ -12,14 +16,14 @@ router.route('/').get(async (req, res) => {
 
 router.route('/:id').get(async (req, res) => {
   const { id } = req.params;
-  const user = await usersService.get(id);
+  const user = await UserServ.get(id);
 
   res.send(User.toResponse(user));
 });
 
 router.route('/').post(async (req, res) => {
   const { body: user } = req;
-  const createdUser = await usersService.create(mapUser(user));
+  const createdUser = await UserServ.create(mapUser(user));
 
   res.send(User.toResponse(createdUser));
 });
@@ -27,7 +31,7 @@ router.route('/').post(async (req, res) => {
 router.route('/:id').put(async (req, res) => {
   const { id } = req.params;
   const { body: user } = req;
-  const newUser = await usersService.update(id, user);
+  const newUser = await UserServ.update(id, user);
 
   res.send(User.toResponse(newUser));
 });
@@ -35,7 +39,7 @@ router.route('/:id').put(async (req, res) => {
 router.route('/:id').delete(async (req, res) => {
   const { id } = req.params;
   try {
-    await usersService.remove(id);
+    await UserServ.remove(id);
     res.status(200).send();
   } catch {
     res.status(404).send('Not found');

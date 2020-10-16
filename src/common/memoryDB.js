@@ -40,9 +40,7 @@ const initDB = () => {
 
 initDB();
 
-const getAll = async entity => {
-  return memoryDB[entity];
-};
+const getAll = async entity => memoryDB[entity];
 
 const get = async (entity, entityId) => {
   return (await getAll(entity)).find(({ id }) => id === entityId);
@@ -50,7 +48,6 @@ const get = async (entity, entityId) => {
 
 const create = async (entity, entityData) => {
   memoryDB[entity].push(entityData);
-
   return entityData;
 };
 
