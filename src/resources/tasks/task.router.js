@@ -3,52 +3,59 @@ const TasksService = require('./task.service');
 const { mapTask } = require('./task.model');
 const memoryDB = require('../../common/memoryDB');
 const TasksRepository = require('./task.memory.repository');
+const asyncMiddleware = require('../../common/asyncErrorMiddleware');
 const TaskRepo = new TasksRepository(memoryDB);
 const TaskServ = new TasksService(TaskRepo);
 
-router.route('/').get(async (req, res) => {
-  const { boardId } = req.params;
-  const tasks = await TaskServ.getAll(boardId);
+router.route('/').get(
+  asyncMiddleware(async (req, res) => {
+    const { boardId } = req.params;
+    const tasks = await TaskServ.getAll(boardId);
 
-  res.send(tasks);
-});
+    res.send(tasks);
+  })
+);
 
-router.route('/:id').get(async (req, res) => {
-  const { boardId, id } = req.params;
+router.route('/:id').get(
+  asyncMiddleware(async (req, res) => {
+    const { boardId, id } = req.params;
 
-  try {
-    const task = await TaskServ.get(id, boardId);
-    res.send(task);
-  } catch {
-    res.status(404).send('Not found');
-  }
-});
+    try {
+      const task = await TaskServ.get(id, boardId);
+      res.send(task);
+    } catch {
+      res.status(404).send('Not found');
+    }
+  })
+);
 
-router.route('/').post(async (req, res) => {
-  const { boardId } = req.params;
-  const { body: task } = req;
-  const createdTask = await TaskServ.create(mapTask(task, boardId));
+router.route('/').post(
+  asyncMiddleware(async (req, res) => {
+    const { boardId } = req.params;
+    const { body: task } = req;
+    const createdTask = await TaskServ.create(mapTask(task, boardId));
 
-  res.send(createdTask);
-});
+    res.send(createdTask);
+  })
+);
 
-router.route('/:id').put(async (req, res) => {
-  const { boardId, id } = req.params;
-  const { body: task } = req;
-  const newTask = await TaskServ.update(id, boardId, task);
+router.route('/:id').put(
+  asyncMiddleware(async (req, res) => {
+    const { boardId, id } = req.params;
+    const { body: task } = req;
+    const newTask = await TaskServ.update(id, boardId, task);
 
-  res.send(newTask);
-});
+    res.send(newTask);
+  })
+);
 
-router.route('/:id').delete(async (req, res) => {
-  const { boardId, id } = req.params;
-
-  try {
+router.route('/:id').delete(
+  asyncMiddleware(async (req, res) => {
+    const { boardId, id } = req.params;
     await TaskServ.remove(id, boardId);
+
     res.status(200).send();
-  } catch {
-    res.status(404).send('Not found');
-  }
-});
+  })
+);
 
 module.exports = router;

@@ -4,46 +4,55 @@ const UserService = require('./user.service');
 const { mapUser } = require('./user.model');
 const memoryDB = require('../../common/memoryDB');
 const UserRepository = require('./user.memory.repository');
+const asyncMiddleware = require('../../common/asyncErrorMiddleware');
 const UserRepo = new UserRepository(memoryDB);
 const UserServ = new UserService(UserRepo);
 
-router.route('/').get(async (req, res) => {
-  const users = await UserServ.getAll();
+router.route('/').get(
+  asyncMiddleware(async (req, res) => {
+    const users = await UserServ.getAll();
 
-  // map user fields to exclude secret fields like "password"
-  res.send(users.map(User.toResponse));
-});
+    // throw new Error('route error');
 
-router.route('/:id').get(async (req, res) => {
-  const { id } = req.params;
-  const user = await UserServ.get(id);
+    res.send(users.map(User.toResponse));
+  })
+);
 
-  res.send(User.toResponse(user));
-});
+router.route('/:id').get(
+  asyncMiddleware(async (req, res) => {
+    const { id } = req.params;
+    const user = await UserServ.get(id);
 
-router.route('/').post(async (req, res) => {
-  const { body: user } = req;
-  const createdUser = await UserServ.create(mapUser(user));
+    res.send(User.toResponse(user));
+  })
+);
 
-  res.send(User.toResponse(createdUser));
-});
+router.route('/').post(
+  asyncMiddleware(async (req, res) => {
+    const { body: user } = req;
+    const createdUser = await UserServ.create(mapUser(user));
 
-router.route('/:id').put(async (req, res) => {
-  const { id } = req.params;
-  const { body: user } = req;
-  const newUser = await UserServ.update(id, user);
+    res.send(User.toResponse(createdUser));
+  })
+);
 
-  res.send(User.toResponse(newUser));
-});
+router.route('/:id').put(
+  asyncMiddleware(async (req, res) => {
+    const { id } = req.params;
+    const { body: user } = req;
+    const newUser = await UserServ.update(id, user);
 
-router.route('/:id').delete(async (req, res) => {
-  const { id } = req.params;
-  try {
+    res.send(User.toResponse(newUser));
+  })
+);
+
+router.route('/:id').delete(
+  asyncMiddleware(async (req, res) => {
+    const { id } = req.params;
     await UserServ.remove(id);
+
     res.status(200).send();
-  } catch {
-    res.status(404).send('Not found');
-  }
-});
+  })
+);
 
 module.exports = router;
