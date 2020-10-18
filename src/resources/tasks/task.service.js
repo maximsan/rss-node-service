@@ -6,7 +6,7 @@ class TaskService {
   }
 
   async getAll(boardId) {
-    return await this.repository.getAll(boardId);
+    return this.repository.getAll(boardId);
   }
 
   async get(id, boardId) {
@@ -20,15 +20,15 @@ class TaskService {
   }
 
   async create(task) {
-    return await this.repository.create(task);
+    return this.repository.create(task);
   }
 
   async update(id, boardId, task) {
-    return await this.repository.update(id, boardId, task);
+    return this.repository.update(id, boardId, task);
   }
 
   async remove(id, boardId) {
-    await this.repository.remove(id, boardId);
+    this.repository.remove(id, boardId);
   }
 }
 

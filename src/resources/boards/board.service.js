@@ -4,23 +4,23 @@ class BoardService {
   }
 
   async getAll() {
-    return await this.repository.getAll();
+    return this.repository.getAll();
   }
 
   async get(id) {
-    return await this.repository.get(id);
+    return this.repository.get(id);
   }
 
   async create(board) {
-    return await this.repository.create(board);
+    return this.repository.create(board);
   }
 
   async update(id, board) {
-    return await this.repository.update(id, board);
+    return this.repository.update(id, board);
   }
 
   async remove(id) {
-    await this.repository.remove(id);
+    this.repository.remove(id);
   }
 }
 
