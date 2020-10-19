@@ -6,7 +6,7 @@ const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 const errorHandler = require('./common/errorHandler');
-const { morganLogger } = require('./common/logger');
+const { morganLogger, logErrorSync } = require('./common/logger');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -32,5 +32,17 @@ app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
 
 app.use(errorHandler);
+
+process.on('uncaughtException', (error, origin) => {
+  const message = `Origin: ${origin}; Message: ${error.message}\n`;
+  logErrorSync(message);
+
+  // eslint-disable-next-line no-process-exit
+  process.exit(1);
+});
+
+process.on('unhandledRejection', reason => {
+  logErrorSync(`${reason.message} \n`);
+});
 
 module.exports = app;

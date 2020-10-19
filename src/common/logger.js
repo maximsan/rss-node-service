@@ -1,11 +1,11 @@
 const path = require('path');
+const { appendFileSync } = require('fs');
 const morgan = require('morgan');
 const { transports, format, createLogger } = require('winston');
 const { combine, timestamp, colorize, label, printf } = format;
 
-console.log('__dirname', __dirname);
-
 const infoLogsFile = path.join(__dirname, '/../../', 'logs/info.log');
+const errorLogsFile = path.join(__dirname, '/../../', 'logs/errors.log');
 
 const timeFormat = () => {
   return new Date().toLocaleString();
@@ -13,7 +13,8 @@ const timeFormat = () => {
 
 // eslint-disable-next-line no-shadow
 const customFormat = printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${label}] ${level}: ${message.replace(/-\s/g, '')}`;
+  return `${timestamp} [${label}] ${level}: ${message &&
+    message.replace(/-\s/g, '')}`;
 });
 
 const winstonLogger = createLogger({
@@ -32,6 +33,20 @@ const winstonLogger = createLogger({
     new transports.File({
       level: 'info',
       filename: infoLogsFile,
+      json: true,
+      colorize: false,
+      maxsize: 5242880,
+      maxFiles: 2,
+      handleExceptions: true,
+      format: combine(
+        label({ label: 'level' }),
+        timestamp({ format: timeFormat }),
+        customFormat
+      )
+    }),
+    new transports.File({
+      level: 'error',
+      filename: errorLogsFile,
       json: true,
       colorize: false,
       maxsize: 5242880,
@@ -80,7 +95,23 @@ const morganLogger = morgan(
   { stream: winstonLogger.stream }
 );
 
+const logError = (error, originalUrl, method) => {
+  winstonLogger.error(
+    `${method} - ${error.message} - ${error.status || 500} - ${originalUrl}`
+  );
+};
+
+const logErrorSync = message => {
+  winstonLogger.error(message);
+
+  appendFileSync(errorLogsFile, message);
+};
+
 module.exports = {
   morganLogger,
-  winstonLogger
+  winstonLogger,
+  logError,
+  logErrorSync,
+  logsFile: infoLogsFile,
+  errorLogsFile
 };

@@ -57,4 +57,6 @@ class UserRepository {
   }
 }
 
+// Promise.reject(Error('Oops!'));
+
 module.exports = UserRepository;
