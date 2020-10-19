@@ -20,7 +20,7 @@ class BoardService {
   }
 
   async remove(id) {
-    this.repository.remove(id);
+    return this.repository.remove(id);
   }
 }
 

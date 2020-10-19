@@ -25,7 +25,7 @@ class TaskRepository {
   }
 
   async create(task) {
-    return await this.model.create(entities.TASKS, task);
+    return this.model.create(entities.TASKS, task);
   }
 
   async update(id, boardId, task) {
@@ -33,7 +33,7 @@ class TaskRepository {
 
     if (!newTask) {
       throw new NotFoundError(
-        `Taks with id: ${id} on board ${boardId} was not found`
+        `Task with id: ${id} on board: ${boardId} was not found`
       );
     }
 
@@ -41,9 +41,16 @@ class TaskRepository {
   }
 
   async remove(id, boardId) {
+    // check if task exit
     const task = await this.get(id, boardId);
 
-    await this.model.remove(entities.TASKS, task.id);
+    if (!task) {
+      throw new NotFoundError(
+        `Task with id: ${id} on board with id: ${boardId} was not found`
+      );
+    }
+
+    return this.model.remove(entities.TASKS, task.id);
   }
 }
 

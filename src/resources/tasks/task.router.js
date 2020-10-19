@@ -19,13 +19,9 @@ router.route('/').get(
 router.route('/:id').get(
   asyncMiddleware(async (req, res) => {
     const { boardId, id } = req.params;
+    const task = await TaskServ.get(id, boardId);
 
-    try {
-      const task = await TaskServ.get(id, boardId);
-      res.send(task);
-    } catch {
-      res.status(404).send('Not found');
-    }
+    res.send(task);
   })
 );
 

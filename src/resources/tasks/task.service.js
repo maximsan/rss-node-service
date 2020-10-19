@@ -13,7 +13,7 @@ class TaskService {
     const task = await this.repository.get(id, boardId);
 
     if (!task) {
-      throw new NotFoundError(`The task with id${id} was not found`);
+      throw new NotFoundError(`The task with id: ${id} was not found`);
     }
 
     return task;
@@ -28,7 +28,7 @@ class TaskService {
   }
 
   async remove(id, boardId) {
-    this.repository.remove(id, boardId);
+    return this.repository.remove(id, boardId);
   }
 }
 

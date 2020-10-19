@@ -35,20 +35,25 @@ class UserRepository {
   }
 
   async remove(id) {
+    // check if user exit
+    await this.get(id);
+
     const userTasks = (await this.model.getAll(entities.TASKS)).filter(
       ({ userId }) => id === userId
     );
 
-    await Promise.all(
-      userTasks.map(task => {
-        return this.model.update(entities.TASKS, task.id, {
-          ...task,
-          userId: null
-        });
-      })
-    );
+    if (userTasks.length) {
+      await Promise.all(
+        userTasks.map(task => {
+          return this.model.update(entities.TASKS, task.id, {
+            ...task,
+            userId: null
+          });
+        })
+      );
+    }
 
-    await this.model.remove(entities.USERS, id);
+    return this.model.remove(entities.USERS, id);
   }
 }
 

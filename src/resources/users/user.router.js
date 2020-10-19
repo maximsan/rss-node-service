@@ -12,8 +12,6 @@ router.route('/').get(
   asyncMiddleware(async (req, res) => {
     const users = await UserServ.getAll();
 
-    // throw new Error('route error');
-
     res.send(users.map(User.toResponse));
   })
 );
