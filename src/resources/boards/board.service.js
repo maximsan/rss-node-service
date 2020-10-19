@@ -1,27 +1,27 @@
-const boardsRepo = require('./board.memory.repository');
+class BoardService {
+  constructor(repository) {
+    this.repository = repository;
+  }
 
-const getAll = async () => {
-  return await boardsRepo.getAll();
-};
+  async getAll() {
+    return this.repository.getAll();
+  }
 
-const get = async id => {
-  return await boardsRepo.get(id);
-};
+  async get(id) {
+    return this.repository.get(id);
+  }
 
-const create = async board => {
-  return await boardsRepo.create(board);
-};
+  async create(board) {
+    return this.repository.create(board);
+  }
 
-const update = async (id, board) => {
-  return await boardsRepo.update(id, board);
-};
+  async update(id, board) {
+    return this.repository.update(id, board);
+  }
 
-const remove = async id => await boardsRepo.remove(id);
+  async remove(id) {
+    return this.repository.remove(id);
+  }
+}
 
-module.exports = {
-  getAll,
-  get,
-  create,
-  update,
-  remove
-};
+module.exports = BoardService;

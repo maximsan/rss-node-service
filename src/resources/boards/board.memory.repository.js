@@ -1,51 +1,57 @@
-const memoryDB = require('../../common/memoryDB');
-const tasksRepository = require('../tasks/task.memory.repository');
+const { entities } = require('../../common/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
-const getAll = async () => {
-  return await memoryDB.getAll(memoryDB.entities.BOARDS);
-};
-
-const get = async id => {
-  const board = await memoryDB.get(memoryDB.entities.BOARDS, id);
-
-  if (!board) {
-    throw new NotFoundError(`The board with id ${id} was not found`);
+class BoardRepository {
+  constructor(model) {
+    this.model = model;
   }
 
-  return board;
-};
-
-const create = async board => {
-  return await memoryDB.create(memoryDB.entities.BOARDS, board);
-};
-
-const update = async (id, board) => {
-  const newBoard = await memoryDB.update(memoryDB.entities.BOARDS, id, board);
-
-  if (!newBoard) {
-    throw new NotFoundError(`The board with id ${id} was not found`);
+  async getAll() {
+    return await this.model.getAll(entities.BOARDS);
   }
 
-  return newBoard;
-};
+  async get(id) {
+    const board = await this.model.get(entities.BOARDS, id);
 
-const remove = async id => {
-  const boardTasks = await tasksRepository.getAll(id);
+    if (!board) {
+      throw new NotFoundError(`The board with id: ${id} was not found`);
+    }
 
-  await Promise.all(
-    boardTasks.map(task => {
-      return tasksRepository.remove(task.id, id);
-    })
-  );
+    return board;
+  }
 
-  await memoryDB.remove(memoryDB.entities.BOARDS, id);
-};
+  async create(board) {
+    return this.model.create(entities.BOARDS, board);
+  }
 
-module.exports = {
-  getAll,
-  get,
-  create,
-  update,
-  remove
-};
+  async update(id, board) {
+    const newBoard = await this.model.update(entities.BOARDS, id, board);
+
+    if (!newBoard) {
+      throw new NotFoundError(`The board with id: ${id} was not found`);
+    }
+
+    return newBoard;
+  }
+
+  async remove(id) {
+    // check if board exist
+    await this.get(id);
+
+    const boardTasks = await (await this.model.getAll(entities.TASKS)).filter(
+      task => task.boardId === id
+    );
+
+    if (boardTasks.length) {
+      await Promise.all(
+        boardTasks.map(task => {
+          return this.model.remove(entities.TASKS, task.id);
+        })
+      );
+    }
+
+    return this.model.remove(entities.BOARDS, id);
+  }
+}
+
+module.exports = BoardRepository;

@@ -1,34 +1,35 @@
-const tasksRepo = require('./task.memory.repository');
 const { NotFoundError } = require('../../common/customErrors');
 
-const getAll = async boardId => {
-  return await tasksRepo.getAll(boardId);
-};
-
-const get = async (id, boardId) => {
-  const task = await tasksRepo.get(id, boardId);
-
-  if (!task) {
-    throw new NotFoundError(`The task with id${id} was not found`);
+class TaskService {
+  constructor(repository) {
+    this.repository = repository;
   }
 
-  return task;
-};
+  async getAll(boardId) {
+    return this.repository.getAll(boardId);
+  }
 
-const create = async task => {
-  return await tasksRepo.create(task);
-};
+  async get(id, boardId) {
+    const task = await this.repository.get(id, boardId);
 
-const update = async (id, boardId, task) => {
-  return await tasksRepo.update(id, boardId, task);
-};
+    if (!task) {
+      throw new NotFoundError(`The task with id: ${id} was not found`);
+    }
 
-const remove = async (id, boardId) => await tasksRepo.remove(id, boardId);
+    return task;
+  }
 
-module.exports = {
-  getAll,
-  get,
-  update,
-  create,
-  remove
-};
+  async create(task) {
+    return this.repository.create(task);
+  }
+
+  async update(id, boardId, task) {
+    return this.repository.update(id, boardId, task);
+  }
+
+  async remove(id, boardId) {
+    return this.repository.remove(id, boardId);
+  }
+}
+
+module.exports = TaskService;

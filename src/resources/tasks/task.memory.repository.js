@@ -1,50 +1,57 @@
-const memoryDB = require('../../common/memoryDB');
+const { entities } = require('../../common/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
-const getAll = async boardId => {
-  return (await memoryDB.getAll(memoryDB.entities.TASKS)).filter(
-    task => task.boardId === boardId
-  );
-};
+class TaskRepository {
+  constructor(model) {
+    this.model = model;
+  }
 
-const get = async (id, boardId) => {
-  const tasks = await getAll(boardId);
-
-  if (!tasks.length) {
-    throw new NotFoundError(
-      `Tasks for board with id: ${boardId} was not found`
+  async getAll(boardId) {
+    return (await this.model.getAll(entities.TASKS)).filter(
+      task => task.boardId === boardId
     );
   }
 
-  return tasks.find(task => task.id === id);
-};
+  async get(id, boardId) {
+    const tasks = await this.getAll(boardId);
 
-const create = async task => {
-  return await memoryDB.create(memoryDB.entities.TASKS, task);
-};
+    if (!tasks.length) {
+      throw new NotFoundError(
+        `Tasks for board with id: ${boardId} was not found`
+      );
+    }
 
-const update = async (id, boardId, task) => {
-  const newTask = await memoryDB.update(memoryDB.entities.TASKS, id, task);
-
-  if (!newTask) {
-    throw new NotFoundError(
-      `Taks with id: ${id} on board ${boardId} was not found`
-    );
+    return tasks.find(task => task.id === id);
   }
 
-  return newTask;
-};
+  async create(task) {
+    return this.model.create(entities.TASKS, task);
+  }
 
-const remove = async (id, boardId) => {
-  const task = await get(id, boardId);
+  async update(id, boardId, task) {
+    const newTask = await this.model.update(entities.TASKS, id, task);
 
-  await memoryDB.remove(memoryDB.entities.TASKS, task.id);
-};
+    if (!newTask) {
+      throw new NotFoundError(
+        `Task with id: ${id} on board: ${boardId} was not found`
+      );
+    }
 
-module.exports = {
-  getAll,
-  get,
-  create,
-  update,
-  remove
-};
+    return newTask;
+  }
+
+  async remove(id, boardId) {
+    // check if task exit
+    const task = await this.get(id, boardId);
+
+    if (!task) {
+      throw new NotFoundError(
+        `Task with id: ${id} on board with id: ${boardId} was not found`
+      );
+    }
+
+    return this.model.remove(entities.TASKS, task.id);
+  }
+}
+
+module.exports = TaskRepository;

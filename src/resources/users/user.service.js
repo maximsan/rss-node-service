@@ -1,13 +1,27 @@
-const usersRepo = require('./user.memory.repository');
+class UserService {
+  constructor(repository) {
+    this.repository = repository;
+  }
 
-const getAll = async () => await usersRepo.getAll();
+  async getAll() {
+    return this.repository.getAll();
+  }
 
-const get = async id => await usersRepo.get(id);
+  async get(id) {
+    return this.repository.get(id);
+  }
 
-const create = async user => await usersRepo.create(user);
+  async create(user) {
+    return this.repository.create(user);
+  }
 
-const update = async (id, user) => await usersRepo.update(id, user);
+  async update(id, user) {
+    return this.repository.update(id, user);
+  }
 
-const remove = async id => await usersRepo.remove(id);
+  async remove(id) {
+    return this.repository.remove(id);
+  }
+}
 
-module.exports = { getAll, get, create, update, remove };
+module.exports = UserService;
