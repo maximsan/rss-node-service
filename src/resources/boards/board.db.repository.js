@@ -1,17 +1,17 @@
-const { entities } = require('../../common/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
 class BoardRepository {
-  constructor(model) {
+  constructor(model, taskModel) {
     this.model = model;
+    this.taskModel = taskModel;
   }
 
   async getAll() {
-    return this.model.getAll(entities.BOARDS);
+    return this.model.find();
   }
 
   async get(id) {
-    const board = await this.model.get(entities.BOARDS, id);
+    const board = await this.model.findById(id);
 
     if (!board) {
       throw new NotFoundError(`The board with id: ${id} was not found`);
@@ -21,36 +21,36 @@ class BoardRepository {
   }
 
   async create(board) {
-    return this.model.create(entities.BOARDS, board);
+    return this.model.create(board);
   }
 
   async update(id, board) {
-    const newBoard = await this.model.update(entities.BOARDS, id, board);
+    const updatedBoard = await this.model.findByIdAndUpdate(id, board, {
+      new: true
+    });
 
-    if (!newBoard) {
+    if (!updatedBoard) {
       throw new NotFoundError(`The board with id: ${id} was not found`);
     }
 
-    return newBoard;
+    return updatedBoard;
   }
 
   async remove(id) {
     // check if board exist
     await this.get(id);
 
-    const boardTasks = await (await this.model.getAll(entities.TASKS)).filter(
-      task => task.boardId === id
-    );
+    const boardTasks = await this.taskModel.find({ boardId: id });
 
     if (boardTasks.length) {
       await Promise.all(
         boardTasks.map(task => {
-          return this.model.remove(entities.TASKS, task.id);
+          return this.taskModel.deleteOne({ _id: task.id });
         })
       );
     }
 
-    return this.model.remove(entities.BOARDS, id);
+    return this.model.deleteOne({ _id: id });
   }
 }
 
