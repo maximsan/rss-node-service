@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const initDB = require('./helpers');
+// const initDB = require('./helpers');
 const { winstonLogger } = require('../common/logger');
 
 const runDB = appStart => {
@@ -16,8 +16,8 @@ const runDB = appStart => {
   db.once('open', async () => {
     console.log('Connection to database is successfully established!');
 
-    // helper to init db with initial data
-    await initDB(db);
+    // helper to init db with initial data if you need it
+    // await initDB(db);
     appStart();
   });
 };

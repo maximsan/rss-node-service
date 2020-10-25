@@ -1,4 +1,4 @@
-const { entities } = require('../../common/memoryDB');
+const { entities } = require('../../db/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
 class UserRepository {

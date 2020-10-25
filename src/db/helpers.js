@@ -1,5 +1,5 @@
 const { Task } = require('../resources/tasks/task.model');
-const { getRandomIndex } = require('../common/memoryDB');
+const { getRandomIndex } = require('./memoryDB');
 const { Board } = require('../resources/boards/board.model');
 const { User } = require('../resources/users/user.model');
 
