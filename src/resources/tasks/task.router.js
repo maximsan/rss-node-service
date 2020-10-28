@@ -1,10 +1,12 @@
 const router = require('express').Router({ mergeParams: true });
 const TasksService = require('./task.service');
 const { mapTask } = require('./task.model');
-const memoryDB = require('../../common/memoryDB');
-const TasksRepository = require('./task.memory.repository');
+const { Task } = require('./task.model');
+const TasksRepository = require('./task.db.repository');
 const asyncMiddleware = require('../../common/asyncErrorMiddleware');
-const TaskRepo = new TasksRepository(memoryDB);
+const { toResponse } = require('./task.model');
+
+const TaskRepo = new TasksRepository(Task);
 const TaskServ = new TasksService(TaskRepo);
 
 router.route('/').get(
@@ -12,7 +14,7 @@ router.route('/').get(
     const { boardId } = req.params;
     const tasks = await TaskServ.getAll(boardId);
 
-    res.send(tasks);
+    res.send(tasks.map(task => toResponse(task)));
   })
 );
 
@@ -21,7 +23,7 @@ router.route('/:id').get(
     const { boardId, id } = req.params;
     const task = await TaskServ.get(id, boardId);
 
-    res.send(task);
+    res.send(toResponse(task));
   })
 );
 
@@ -31,7 +33,7 @@ router.route('/').post(
     const { body: task } = req;
     const createdTask = await TaskServ.create(mapTask(task, boardId));
 
-    res.send(createdTask);
+    res.send(toResponse(createdTask));
   })
 );
 
@@ -41,7 +43,7 @@ router.route('/:id').put(
     const { body: task } = req;
     const newTask = await TaskServ.update(id, boardId, task);
 
-    res.send(newTask);
+    res.send(toResponse(newTask));
   })
 );
 

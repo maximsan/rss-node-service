@@ -26,6 +26,10 @@ const initDB = () => {
   for (let i = 0; i < 10; i++) {
     memoryDB[entities.TASKS].push(createTask());
   }
+  initTasks();
+};
+
+const initTasks = () => {
   for (let j = 0; j < 10; j++) {
     const board = memoryDB[entities.BOARDS][getRandomIndex(5)];
     memoryDB[entities.TASKS][j].boardId = board.id;
@@ -72,5 +76,7 @@ module.exports = {
   get,
   create,
   update,
-  remove
+  remove,
+  initTasks,
+  getRandomIndex
 };

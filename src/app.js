@@ -6,11 +6,15 @@ const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 const errorHandler = require('./common/errorHandler');
+const cors = require('cors');
+const helmet = require('helmet');
 const { morganLogger, logErrorSync } = require('./common/logger');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
+app.use(cors());
+app.use(helmet());
 app.use(express.json());
 
 app.use(morganLogger);

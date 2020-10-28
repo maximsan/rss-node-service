@@ -1,4 +1,3 @@
-const { entities } = require('../../db/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
 class TaskRepository {
@@ -7,9 +6,7 @@ class TaskRepository {
   }
 
   async getAll(boardId) {
-    return (await this.model.getAll(entities.TASKS)).filter(
-      task => task.boardId === boardId
-    );
+    return this.model.find({ boardId });
   }
 
   async get(id, boardId) {
@@ -25,19 +22,21 @@ class TaskRepository {
   }
 
   async create(task) {
-    return this.model.create(entities.TASKS, task);
+    return this.model.create(task);
   }
 
   async update(id, boardId, task) {
-    const newTask = await this.model.update(entities.TASKS, id, task);
+    const updatedTask = await this.model.findByIdAndUpdate(id, task, {
+      new: true
+    });
 
-    if (!newTask) {
+    if (!updatedTask) {
       throw new NotFoundError(
         `Task with id: ${id} on board: ${boardId} was not found`
       );
     }
 
-    return newTask;
+    return updatedTask;
   }
 
   async remove(id, boardId) {
@@ -50,7 +49,7 @@ class TaskRepository {
       );
     }
 
-    return this.model.remove(entities.TASKS, task.id);
+    return this.model.deleteOne({ _id: task.id });
   }
 }
 

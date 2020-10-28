@@ -1,19 +1,19 @@
 const router = require('express').Router();
 const BoardService = require('./board.service');
-const { mapBoard } = require('./board.model');
-
-const memoryDB = require('../../common/memoryDB');
-const BoardRepository = require('./board.memory.repository');
+const { mapBoard, Board } = require('./board.model');
+const BoardRepository = require('./board.db.repository');
 const asyncMiddleware = require('../../common/asyncErrorMiddleware');
+const { toResponse } = require('./board.model');
+const { Task } = require('../tasks/task.model');
 
-const BoardRepo = new BoardRepository(memoryDB);
+const BoardRepo = new BoardRepository(Board, Task);
 const BoardServ = new BoardService(BoardRepo);
 
 router.route('/').get(
   asyncMiddleware(async (req, res) => {
     const boards = await BoardServ.getAll();
 
-    res.send(boards);
+    res.send(boards.map(board => toResponse(board)));
   })
 );
 
@@ -22,7 +22,7 @@ router.route('/:id').get(
     const { id } = req.params;
     const board = await BoardServ.get(id);
 
-    res.send(board);
+    res.send(toResponse(board));
   })
 );
 
@@ -31,7 +31,7 @@ router.route('/').post(
     const { body: board } = req;
     const createdBoard = await BoardServ.create(mapBoard(board));
 
-    res.send(createdBoard);
+    res.send(toResponse(createdBoard));
   })
 );
 
@@ -41,7 +41,7 @@ router.route('/:id').put(
     const { body: board } = req;
     const newBoard = await BoardServ.update(id, board);
 
-    res.send(newBoard);
+    res.send(toResponse(newBoard));
   })
 );
 
