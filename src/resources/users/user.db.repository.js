@@ -38,7 +38,11 @@ class UserRepository {
 
   async create(user) {
     const hashedPassword = await bcrypt.hash(user.password, 6);
-    const newUser = new User({ ...user, password: hashedPassword });
+    const newUser = new User({
+      name: user.name,
+      login: user.login,
+      password: hashedPassword
+    });
 
     return this.model.create(newUser);
   }
