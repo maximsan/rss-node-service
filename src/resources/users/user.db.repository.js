@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const { User } = require('./user.model');
 const { NotFoundError } = require('../../common/customErrors');
 
 class UserRepository {
@@ -8,6 +10,20 @@ class UserRepository {
 
   async getAll() {
     return this.model.find();
+  }
+
+  async findByParams(params) {
+    const user = await this.model.find({ ...params });
+
+    if (user.length > 1) {
+      // throw new error
+    }
+
+    if (!user[0]) {
+      throw new NotFoundError('User was not found');
+    }
+
+    return user[0];
   }
 
   async get(id) {
@@ -21,7 +37,10 @@ class UserRepository {
   }
 
   async create(user) {
-    return this.model.create(user);
+    const hashedPassword = await bcrypt.hash(user.password, 6);
+    const newUser = new User({ ...user, password: hashedPassword });
+
+    return this.model.create(newUser);
   }
 
   async update(id, user) {

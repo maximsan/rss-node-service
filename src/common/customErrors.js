@@ -6,6 +6,15 @@ class NotFoundError extends Error {
   }
 }
 
+class ForbiddenError extends Error {
+  constructor(message) {
+    super(message);
+
+    this.message = message;
+  }
+}
+
 module.exports = {
-  NotFoundError
+  NotFoundError,
+  ForbiddenError
 };

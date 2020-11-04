@@ -11,6 +11,8 @@ const users = [
   new User({ name: 'USER 5', login: 'user5', password: 'P@55w0rd' })
 ];
 
+const admin = new User({ name: 'admin', login: 'admin', password: 'admin' });
+
 const boards = [
   new Board({ title: 'BOARD 1', columns: [] }),
   new Board({ title: 'BOARD 2', columns: [] }),
@@ -51,4 +53,11 @@ const initDB = async db => {
   tasks.forEach(task => task.save());
 };
 
-module.exports = initDB;
+const addAdmin = () => {
+  User.create(admin);
+};
+
+module.exports = {
+  initDB,
+  addAdmin
+};

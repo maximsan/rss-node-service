@@ -1,3 +1,5 @@
+// eslint-disable-next-line node/no-unpublished-require
+const { NOT_FOUND, getReasonPhrase } = require('http-status-codes');
 const router = require('express').Router();
 const UserService = require('./user.service');
 const { mapUser } = require('./user.model');
@@ -30,6 +32,10 @@ router.route('/').post(
   asyncMiddleware(async (req, res) => {
     const { body: user } = req;
     const createdUser = await UserServ.create(mapUser(user));
+
+    if (!createdUser) {
+      res.status(NOT_FOUND).send(getReasonPhrase(NOT_FOUND));
+    }
 
     res.send(toResponse(createdUser));
   })

@@ -5,9 +5,11 @@ const YAML = require('yamljs');
 const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
+const loginRouter = require('./resources/login/login.router');
 const errorHandler = require('./common/errorHandler');
 const cors = require('cors');
 const helmet = require('helmet');
+const { authorizeMiddleware } = require('./common/authorizeMiddleware');
 const { morganLogger, logErrorSync } = require('./common/logger');
 
 const app = express();
@@ -28,6 +30,10 @@ app.use('/', (req, res, next) => {
   }
   next();
 });
+
+app.use(authorizeMiddleware);
+
+app.use('/login', loginRouter);
 
 app.use('/users', userRouter);
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// const { addAdmin } = require('./helpers');
 // const initDB = require('./helpers');
 const { winstonLogger } = require('../common/logger');
 
@@ -18,6 +19,9 @@ const runDB = appStart => {
 
     // helper to init db with initial data if you need it
     // await initDB(db);
+
+    // helper to add admin into db
+    // addAdmin();
     appStart();
   });
 };
