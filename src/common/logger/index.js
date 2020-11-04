@@ -89,7 +89,9 @@ const morganLogger = morgan(
 
 const logError = (error, originalUrl, method) => {
   winstonLogger.error(
-    `${method} - ${error.message} - ${error.status || 500} - ${originalUrl}`
+    `${method} - ${error.message} - ${error.status || 500} - ${originalUrl} - ${
+      error.stack
+    }`
   );
 };
 

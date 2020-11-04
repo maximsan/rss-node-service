@@ -1,6 +1,5 @@
-const bcrypt = require('bcrypt');
-const { User } = require('./user.model');
-const { NotFoundError } = require('../../common/customErrors');
+const { createUserWithHashedPassword } = require('./user.model');
+const { ForbiddenError, NotFoundError } = require('../../common/customErrors');
 
 class UserRepository {
   constructor(userModel, taskModel) {
@@ -13,14 +12,16 @@ class UserRepository {
   }
 
   async findByParams(params) {
-    const user = await this.model.find({ ...params });
+    const user = await this.model.find({ login: params.login });
 
     if (user.length > 1) {
-      // throw new error
+      throw new Error('user duplication');
     }
 
     if (!user[0]) {
-      throw new NotFoundError('User was not found');
+      throw new ForbiddenError(
+        'User was not found, incorrect login or password'
+      );
     }
 
     return user[0];
@@ -37,18 +38,23 @@ class UserRepository {
   }
 
   async create(user) {
-    const hashedPassword = await bcrypt.hash(user.password, 6);
-    const newUser = new User({
-      name: user.name,
-      login: user.login,
-      password: hashedPassword
-    });
+    const newUser = await createUserWithHashedPassword(
+      user.name,
+      user.login,
+      user.password
+    );
 
     return this.model.create(newUser);
   }
 
   async update(id, user) {
-    const updatedUser = await this.model.findByIdAndUpdate(id, user, {
+    const newUser = await createUserWithHashedPassword(
+      user.name,
+      user.login,
+      user.password
+    );
+
+    const updatedUser = await this.model.findByIdAndUpdate(id, newUser, {
       new: true
     });
 

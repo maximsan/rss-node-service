@@ -4,7 +4,8 @@ const { NotFoundError } = require('./customErrors');
 const {
   NOT_FOUND,
   FORBIDDEN,
-  INTERNAL_SERVER_ERROR
+  INTERNAL_SERVER_ERROR,
+  getReasonPhrase
   // eslint-disable-next-line node/no-unpublished-require
 } = require('http-status-codes');
 
@@ -16,7 +17,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err instanceof ForbiddenError) {
-    res.status(FORBIDDEN).send(err.message);
+    res.status(FORBIDDEN).send(getReasonPhrase(FORBIDDEN));
     logError(err, req.originalUrl, req.method);
     return;
   }

@@ -12,9 +12,13 @@ const LoginServ = new LoginService(UserRepo);
 router.post(
   '/',
   asyncMiddleware(async (req, res) => {
-    const { login, password } = req.body;
+    const { name, login, password } = req.body;
 
-    const bearerToken = await LoginServ.createJwtToken({ login, password });
+    const bearerToken = await LoginServ.createJwtToken({
+      name,
+      login,
+      password
+    });
 
     if (!bearerToken) {
       res.status(UNAUTHORIZED).send(getReasonPhrase(UNAUTHORIZED));
