@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const { hashPassword } = require('../../common/hashHelpers');
 const { User } = require('./user.model');
 const { entities } = require('../../db/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
@@ -23,7 +23,7 @@ class UserRepository {
   }
 
   async create(user) {
-    const hashedPassword = await bcrypt.hash(user.password, 6);
+    const hashedPassword = await hashPassword(user.password);
 
     return this.model.create(
       entities.USERS,

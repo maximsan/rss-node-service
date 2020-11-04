@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { checkHashedPassword } = require('../../common/hashHelpers');
 const { ForbiddenError } = require('../../common/customErrors');
 
 class LoginService {
@@ -13,9 +14,13 @@ class LoginService {
       throw new ForbiddenError();
     }
 
-    const { userId, login } = loggedUser;
+    const { userId, login, password } = loggedUser;
 
-    return jwt.sign({ userId, login }, process.env.JWT_SECRET_KEY);
+    const isValid = checkHashedPassword(params.password, password);
+
+    if (isValid) {
+      return jwt.sign({ userId, login }, process.env.JWT_SECRET_KEY);
+    }
   }
 }
 
