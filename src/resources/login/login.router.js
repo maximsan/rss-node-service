@@ -14,15 +14,13 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const { login, password } = req.body;
 
-    const token = await LoginServ.createJwtToken({ login, password });
+    const bearerToken = await LoginServ.createJwtToken({ login, password });
 
-    console.log(token);
-
-    if (!token) {
+    if (!bearerToken) {
       res.status(UNAUTHORIZED).send(getReasonPhrase(UNAUTHORIZED));
     }
 
-    res.status(OK).send(token);
+    res.status(OK).send({ token: bearerToken });
   })
 );
 

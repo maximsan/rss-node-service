@@ -9,10 +9,10 @@ const authorizeMiddleware = (req, res, next) => {
     return next();
   }
 
-  const { authorization } = req.headers;
+  const bearerToken = req.header('Authorization');
 
-  if (authorization) {
-    const [schema, token] = authorization.split(' ');
+  if (bearerToken) {
+    const [schema, token] = bearerToken.split(' ');
 
     // const {
     //   payload: { userId, login, secret }
