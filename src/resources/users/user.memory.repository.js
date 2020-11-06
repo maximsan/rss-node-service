@@ -1,3 +1,5 @@
+const { hashPassword } = require('../../common/hashHelpers');
+const { User } = require('./user.model');
 const { entities } = require('../../db/memoryDB');
 const { NotFoundError } = require('../../common/customErrors');
 
@@ -21,7 +23,12 @@ class UserRepository {
   }
 
   async create(user) {
-    return this.model.create(entities.USERS, user);
+    const hashedPassword = await hashPassword(user.password);
+
+    return this.model.create(
+      entities.USERS,
+      new User({ ...user, password: hashedPassword })
+    );
   }
 
   async update(id, user) {
