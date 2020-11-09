@@ -1,3 +1,4 @@
+const { hashPassword } = require('../common/hashHelpers');
 const { Task } = require('../resources/tasks/task.model');
 const { getRandomIndex } = require('./memoryDB');
 const { Board } = require('../resources/boards/board.model');
@@ -10,8 +11,6 @@ const users = [
   new User({ name: 'USER 4', login: 'user4', password: 'P@55w0rd' }),
   new User({ name: 'USER 5', login: 'user5', password: 'P@55w0rd' })
 ];
-
-const admin = new User({ name: 'admin', login: 'admin', password: 'admin' });
 
 const boards = [
   new Board({ title: 'BOARD 1', columns: [] }),
@@ -53,8 +52,9 @@ const initDB = async db => {
   tasks.forEach(task => task.save());
 };
 
-const addAdmin = () => {
-  User.create(admin);
+const addAdmin = async () => {
+  const password = await hashPassword('admin');
+  User.create(new User({ name: 'admin', login: 'admin', password }));
 };
 
 module.exports = {
