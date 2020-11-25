@@ -1,6 +1,6 @@
 class UserService {
-  constructor(repository) {
-    this.repository = repository;
+  constructor({ userRepository }) {
+    this.repository = userRepository;
   }
 
   async getAll() {

@@ -1,63 +1,45 @@
-// eslint-disable-next-line node/no-unpublished-require
-const { NOT_FOUND, getReasonPhrase } = require('http-status-codes');
 const router = require('express').Router();
-const UserService = require('./user.service');
-const { mapUser } = require('./user.model');
-const { User, toResponse } = require('./user.model');
-const UserRepository = require('./user.db.repository');
 const asyncMiddleware = require('../../common/asyncErrorMiddleware');
-const { Task } = require('../tasks/task.model');
+const { container } = require('../../di/DISetup');
 
-const UserRepo = new UserRepository(User, Task);
-const UserServ = new UserService(UserRepo);
+router
+  .route('/')
+  .get(
+    asyncMiddleware((req, res) =>
+      container.resolve('userController').get(req, res)
+    )
+  );
 
-router.route('/').get(
-  asyncMiddleware(async (req, res) => {
-    const users = await UserServ.getAll();
+router
+  .route('/:id')
+  .get(
+    asyncMiddleware((req, res) =>
+      container.resolve('userController').getById(req, res)
+    )
+  );
 
-    res.send(users.map(toResponse));
-  })
-);
+router
+  .route('/')
+  .post(
+    asyncMiddleware((req, res) =>
+      container.resolve('userController').post(req, res)
+    )
+  );
 
-router.route('/:id').get(
-  asyncMiddleware(async (req, res) => {
-    const { id } = req.params;
-    const user = await UserServ.get(id);
+router
+  .route('/:id')
+  .put(
+    asyncMiddleware((req, res) =>
+      container.resolve('userController').put(req, res)
+    )
+  );
 
-    res.send(toResponse(user));
-  })
-);
-
-router.route('/').post(
-  asyncMiddleware(async (req, res) => {
-    const { body: user } = req;
-    const createdUser = await UserServ.create(mapUser(user));
-
-    if (!createdUser) {
-      res.status(NOT_FOUND).send(getReasonPhrase(NOT_FOUND));
-    }
-
-    res.send(toResponse(createdUser));
-  })
-);
-
-router.route('/:id').put(
-  asyncMiddleware(async (req, res) => {
-    const { id } = req.params;
-    const { body: user } = req;
-    const newUser = await UserServ.update(id, user);
-
-    res.send(toResponse(newUser));
-  })
-);
-
-router.route('/:id').delete(
-  asyncMiddleware(async (req, res) => {
-    const { id } = req.params;
-    await UserServ.remove(id);
-
-    res.status(200).send();
-  })
-);
+router
+  .route('/:id')
+  .delete(
+    asyncMiddleware((req, res) =>
+      container.resolve('userController').delete(req, res)
+    )
+  );
 
 module.exports = router;

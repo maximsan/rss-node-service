@@ -1,17 +1,17 @@
 const { NotFoundError } = require('../../common/customErrors');
 
 class BoardRepository {
-  constructor(model, taskModel) {
-    this.model = model;
+  constructor({ boardModel, taskModel }) {
+    this.boardModel = boardModel;
     this.taskModel = taskModel;
   }
 
   async getAll() {
-    return this.model.find();
+    return this.boardModel.find();
   }
 
   async get(id) {
-    const board = await this.model.findById(id);
+    const board = await this.boardModel.findById(id);
 
     if (!board) {
       throw new NotFoundError(`The board with id: ${id} was not found`);
@@ -21,11 +21,11 @@ class BoardRepository {
   }
 
   async create(board) {
-    return this.model.create(board);
+    return this.boardModel.create(board);
   }
 
   async update(id, board) {
-    const updatedBoard = await this.model.findByIdAndUpdate(id, board, {
+    const updatedBoard = await this.boardModel.findByIdAndUpdate(id, board, {
       new: true
     });
 
@@ -50,7 +50,7 @@ class BoardRepository {
       );
     }
 
-    return this.model.deleteOne({ _id: id });
+    return this.boardModel.deleteOne({ _id: id });
   }
 }
 

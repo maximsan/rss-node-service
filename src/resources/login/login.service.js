@@ -4,8 +4,8 @@ const { checkHashedPassword } = require('../../common/hashHelpers');
 const { ForbiddenError } = require('../../common/customErrors');
 
 class LoginService {
-  constructor(repository) {
-    this.repository = repository;
+  constructor({ userRepository }) {
+    this.repository = userRepository;
   }
 
   async createJwtToken(params) {

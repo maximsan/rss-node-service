@@ -2,17 +2,17 @@ const { createUserWithHashedPassword } = require('./user.model');
 const { ForbiddenError, NotFoundError } = require('../../common/customErrors');
 
 class UserRepository {
-  constructor(userModel, taskModel) {
-    this.model = userModel;
+  constructor({ userModel, taskModel }) {
+    this.userModel = userModel;
     this.taskModel = taskModel;
   }
 
   async getAll() {
-    return this.model.find();
+    return this.userModel.find();
   }
 
   async findByParams(params) {
-    const user = await this.model.find({ login: params.login });
+    const user = await this.userModel.find({ login: params.login });
 
     if (user.length > 1) {
       throw new Error('user duplication');
@@ -28,7 +28,7 @@ class UserRepository {
   }
 
   async get(id) {
-    const user = await this.model.findById(id);
+    const user = await this.userModel.findById(id);
 
     if (!user) {
       throw new NotFoundError(`User with id: ${id} was not found`);
@@ -44,7 +44,7 @@ class UserRepository {
       user.password
     );
 
-    return this.model.create(newUser);
+    return this.userModel.create(newUser);
   }
 
   async update(id, user) {
@@ -54,7 +54,7 @@ class UserRepository {
       user.password
     );
 
-    const updatedUser = await this.model.findByIdAndUpdate(id, newUser, {
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, newUser, {
       new: true
     });
 
@@ -78,7 +78,7 @@ class UserRepository {
       );
     }
 
-    return this.model.findByIdAndDelete(id);
+    return this.userModel.findByIdAndDelete(id);
   }
 }
 

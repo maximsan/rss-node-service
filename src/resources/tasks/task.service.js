@@ -1,8 +1,8 @@
 const { NotFoundError } = require('../../common/customErrors');
 
 class TaskService {
-  constructor(repository) {
-    this.repository = repository;
+  constructor({ taskRepository }) {
+    this.repository = taskRepository;
   }
 
   async getAll(boardId) {
@@ -20,6 +20,7 @@ class TaskService {
   }
 
   async create(task) {
+    console.log('taskRepository', task);
     return this.repository.create(task);
   }
 

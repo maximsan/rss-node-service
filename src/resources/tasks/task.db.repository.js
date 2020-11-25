@@ -1,12 +1,12 @@
 const { NotFoundError } = require('../../common/customErrors');
 
 class TaskRepository {
-  constructor(model) {
-    this.model = model;
+  constructor({ taskModel }) {
+    this.taskModel = taskModel;
   }
 
   async getAll(boardId) {
-    return this.model.find({ boardId });
+    return this.taskModel.find({ boardId });
   }
 
   async get(id, boardId) {
@@ -22,11 +22,11 @@ class TaskRepository {
   }
 
   async create(task) {
-    return this.model.create(task);
+    return this.taskModel.create(task);
   }
 
   async update(id, boardId, task) {
-    const updatedTask = await this.model.findByIdAndUpdate(id, task, {
+    const updatedTask = await this.taskModel.findByIdAndUpdate(id, task, {
       new: true
     });
 
@@ -49,7 +49,7 @@ class TaskRepository {
       );
     }
 
-    return this.model.deleteOne({ _id: task.id });
+    return this.taskModel.deleteOne({ _id: task.id });
   }
 }
 

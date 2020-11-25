@@ -33,8 +33,9 @@ const toResponse = ({ id, title, columns }) => {
   return {
     id,
     title,
-    // eslint-disable-next-line no-shadow
-    columns: columns.map(({ id, title, order }) => ({ id, title, order }))
+    columns:
+      // eslint-disable-next-line no-shadow
+      columns && columns.map(({ id, title, order }) => ({ id, title, order }))
   };
 };
 

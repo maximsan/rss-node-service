@@ -1,59 +1,45 @@
 const router = require('express').Router({ mergeParams: true });
-const TasksService = require('./task.service');
-const { mapTask } = require('./task.model');
-const { Task } = require('./task.model');
-const TasksRepository = require('./task.db.repository');
 const asyncMiddleware = require('../../common/asyncErrorMiddleware');
-const { toResponse } = require('./task.model');
+const { container } = require('../../di/DISetup');
 
-const TaskRepo = new TasksRepository(Task);
-const TaskServ = new TasksService(TaskRepo);
+router
+  .route('/')
+  .get(
+    asyncMiddleware((req, res) =>
+      container.resolve('taskController').get(req, res)
+    )
+  );
 
-router.route('/').get(
-  asyncMiddleware(async (req, res) => {
-    const { boardId } = req.params;
-    const tasks = await TaskServ.getAll(boardId);
+router
+  .route('/:id')
+  .get(
+    asyncMiddleware((req, res) =>
+      container.resolve('taskController').getById(req, res)
+    )
+  );
 
-    res.send(tasks.map(task => toResponse(task)));
-  })
-);
+router
+  .route('/')
+  .post(
+    asyncMiddleware((req, res) =>
+      container.resolve('taskController').post(req, res)
+    )
+  );
 
-router.route('/:id').get(
-  asyncMiddleware(async (req, res) => {
-    const { boardId, id } = req.params;
-    const task = await TaskServ.get(id, boardId);
+router
+  .route('/:id')
+  .put(
+    asyncMiddleware((req, res) =>
+      container.resolve('taskController').put(req, res)
+    )
+  );
 
-    res.send(toResponse(task));
-  })
-);
-
-router.route('/').post(
-  asyncMiddleware(async (req, res) => {
-    const { boardId } = req.params;
-    const { body: task } = req;
-    const createdTask = await TaskServ.create(mapTask(task, boardId));
-
-    res.send(toResponse(createdTask));
-  })
-);
-
-router.route('/:id').put(
-  asyncMiddleware(async (req, res) => {
-    const { boardId, id } = req.params;
-    const { body: task } = req;
-    const newTask = await TaskServ.update(id, boardId, task);
-
-    res.send(toResponse(newTask));
-  })
-);
-
-router.route('/:id').delete(
-  asyncMiddleware(async (req, res) => {
-    const { boardId, id } = req.params;
-    await TaskServ.remove(id, boardId);
-
-    res.status(200).send();
-  })
-);
+router
+  .route('/:id')
+  .delete(
+    asyncMiddleware((req, res) =>
+      container.resolve('taskController').delete(req, res)
+    )
+  );
 
 module.exports = router;

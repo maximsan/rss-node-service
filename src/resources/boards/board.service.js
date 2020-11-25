@@ -1,6 +1,6 @@
 class BoardService {
-  constructor(repository) {
-    this.repository = repository;
+  constructor({ boardRepository }) {
+    this.repository = boardRepository;
   }
 
   async getAll() {
