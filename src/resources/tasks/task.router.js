@@ -2,44 +2,16 @@ const router = require('express').Router({ mergeParams: true });
 const asyncMiddleware = require('../../common/asyncErrorMiddleware');
 const { container } = require('../../di/DISetup');
 
-router
-  .route('/')
-  .get(
-    asyncMiddleware((req, res) =>
-      container.resolve('taskController').get(req, res)
-    )
-  );
+const taskController = container.resolve('taskController');
 
-router
-  .route('/:id')
-  .get(
-    asyncMiddleware((req, res) =>
-      container.resolve('taskController').getById(req, res)
-    )
-  );
+router.route('/').get(asyncMiddleware(taskController.get));
 
-router
-  .route('/')
-  .post(
-    asyncMiddleware((req, res) =>
-      container.resolve('taskController').post(req, res)
-    )
-  );
+router.route('/:id').get(asyncMiddleware(taskController.getById));
 
-router
-  .route('/:id')
-  .put(
-    asyncMiddleware((req, res) =>
-      container.resolve('taskController').put(req, res)
-    )
-  );
+router.route('/').post(asyncMiddleware(taskController.post));
 
-router
-  .route('/:id')
-  .delete(
-    asyncMiddleware((req, res) =>
-      container.resolve('taskController').delete(req, res)
-    )
-  );
+router.route('/:id').put(asyncMiddleware(taskController.put));
+
+router.route('/:id').delete(asyncMiddleware(taskController.delete));
 
 module.exports = router;

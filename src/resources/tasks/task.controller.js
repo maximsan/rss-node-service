@@ -4,6 +4,12 @@ const { mapTask } = require('./task.model');
 class TaskController {
   constructor({ taskService }) {
     this.taskService = taskService;
+
+    this.get = this.get.bind(this);
+    this.getById = this.getById.bind(this);
+    this.post = this.post.bind(this);
+    this.put = this.put.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   async get(req, res) {
