@@ -15,22 +15,25 @@ const { User } = require('../resources/users/user.model');
 
 const container = createContainer();
 
-container.register({
-  taskModel: asValue(Task),
-  userModel: asValue(User),
-  boardModel: asValue(Board),
-  taskRepository: asClass(TaskRepository).scoped(),
-  boardRepository: asClass(BoardRepository).scoped(),
-  userRepository: asClass(UserRepository).scoped(),
-  userService: asClass(UserService).scoped(),
-  taskService: asClass(TaskService).scoped(),
-  boardService: asClass(BoardService).scoped(),
-  userController: asClass(UserController).scoped(),
-  taskController: asClass(TaskController).scoped(),
-  boardController: asClass(BoardController).scoped(),
-  loginService: asClass(LoginService)
-});
+const setupIoCContainer = () => {
+  container.register({
+    taskModel: asValue(Task),
+    userModel: asValue(User),
+    boardModel: asValue(Board),
+    taskRepository: asClass(TaskRepository).scoped(),
+    boardRepository: asClass(BoardRepository).scoped(),
+    userRepository: asClass(UserRepository).scoped(),
+    userService: asClass(UserService).scoped(),
+    taskService: asClass(TaskService).scoped(),
+    boardService: asClass(BoardService).scoped(),
+    userController: asClass(UserController).scoped(),
+    taskController: asClass(TaskController).scoped(),
+    boardController: asClass(BoardController).scoped(),
+    loginService: asClass(LoginService)
+  });
+};
 
 module.exports = {
-  container
+  container,
+  setupIoCContainer
 };
