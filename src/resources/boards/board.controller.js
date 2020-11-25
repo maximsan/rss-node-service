@@ -4,6 +4,12 @@ const { mapBoard } = require('./board.model');
 class BoardController {
   constructor({ boardService }) {
     this.boardService = boardService;
+
+    this.get = this.get.bind(this);
+    this.getById = this.getById.bind(this);
+    this.post = this.post.bind(this);
+    this.put = this.put.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   async get(req, res) {
